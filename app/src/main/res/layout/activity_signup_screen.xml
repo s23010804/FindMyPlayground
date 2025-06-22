@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_1">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="30dp">
+
+        <TextView
+            android:id="@+id/signupTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Signup"
+            android:textSize="35sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:textColor="#FFFFFF"
+
+            android:layout_marginTop="3dp"
+            android:layout_marginBottom="30dp" />
+
+        <EditText
+            android:id="@+id/uNameInput"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:hint="User Name"
+            android:inputType="textPersonName"
+            android:background="@drawable/rounded_corner_clr"
+            android:padding="10dp"
+            android:textStyle="bold"
+            android:layout_marginTop="10dp" />
+
+
+        <EditText
+            android:id="@+id/contactNumberInput"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:hint="Phone Number"
+            android:inputType="phone"
+            android:background="@drawable/rounded_corner_clr"
+            android:padding="10dp"
+            android:textStyle="bold"
+            android:layout_marginTop="20dp" />
+
+        <EditText
+            android:id="@+id/passwordInput"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:hint="New Password"
+            android:inputType="textPassword"
+            android:background="@drawable/rounded_corner_clr"
+            android:padding="10dp"
+            android:textStyle="bold"
+            android:layout_marginTop="70dp" />
+
+        <EditText
+            android:id="@+id/confirmPasswordInput"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:hint="Confirm Password"
+            android:inputType="textPassword"
+            android:background="@drawable/rounded_corner_clr"
+            android:padding="10dp"
+            android:textStyle="bold"
+            android:layout_marginTop="20dp" />
+
+        <Button
+            android:id="@+id/registerButton"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="Register Now"
+            android:textStyle="bold"
+            android:backgroundTint="#000033"
+            android:textColor="#FFFFFF"
+            android:layout_marginTop="100dp" />
+
+    </LinearLayout>
+</ScrollView>
