@@ -6,7 +6,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.s23010804.findmyplayground.model.Playground;
+import com.s23010804.findmyplayground.adapter.PlaygroundAdapter;
+import com.s23010804.findmyplayground.models.Playground;
 
 import java.util.ArrayList;
 import java.util.List;

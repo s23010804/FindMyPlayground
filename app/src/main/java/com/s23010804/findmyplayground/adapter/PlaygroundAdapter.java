@@ -1,4 +1,4 @@
-package com.s23010804.findmyplayground;
+package com.s23010804.findmyplayground.adapter;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,18 +13,24 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.s23010804.findmyplayground.model.Playground;
+import com.s23010804.findmyplayground.DatabaseHelper;
+import com.s23010804.findmyplayground.PlaygroundDetailActivity;
+import com.s23010804.findmyplayground.R;
+import com.s23010804.findmyplayground.ReviewActivity;
+import com.s23010804.findmyplayground.models.Playground;
 
 import java.util.List;
 
 public class PlaygroundAdapter extends RecyclerView.Adapter<PlaygroundAdapter.ViewHolder> {
 
-    Context context;
-    List<Playground> playgroundList;
+    private final Context context;
+    private final List<Playground> playgroundList;
+    private final DatabaseHelper db;
 
     public PlaygroundAdapter(Context context, List<Playground> playgroundList) {
         this.context = context;
         this.playgroundList = playgroundList;
+        this.db = new DatabaseHelper(context); // Use single instance
     }
 
     @NonNull
@@ -40,11 +46,15 @@ public class PlaygroundAdapter extends RecyclerView.Adapter<PlaygroundAdapter.Vi
         holder.pgName.setText(pg.getName());
         holder.pgLocation.setText(pg.getLocation());
 
-        // Set dynamic image
+        // Set dynamic image with fallback
         int imageResId = context.getResources().getIdentifier(pg.getImageName(), "drawable", context.getPackageName());
-        holder.playgroundImage.setImageResource(imageResId);
+        if (imageResId != 0) {
+            holder.playgroundImage.setImageResource(imageResId);
+        } else {
+            holder.playgroundImage.setImageResource(R.drawable.playground1); // Ensure this drawable exists
+        }
 
-        // Book button click
+        // Book button click → Open PlaygroundDetailActivity
         holder.bookBtn.setOnClickListener(v -> {
             Intent intent = new Intent(context, PlaygroundDetailActivity.class);
             intent.putExtra("name", pg.getName());
@@ -52,9 +62,9 @@ public class PlaygroundAdapter extends RecyclerView.Adapter<PlaygroundAdapter.Vi
             context.startActivity(intent);
         });
 
-        // Favorite button click
+        // Favorite button click → Save to DB
         holder.favoriteBtn.setOnClickListener(v -> {
-            boolean saved = new DatabaseHelper(context).addToFavorites(pg.getName(), pg.getLocation());
+            boolean saved = db.addToFavorites(pg.getName(), pg.getLocation());
             if (saved) {
                 Toast.makeText(context, "Added to favorites!", Toast.LENGTH_SHORT).show();
             } else {
@@ -62,7 +72,7 @@ public class PlaygroundAdapter extends RecyclerView.Adapter<PlaygroundAdapter.Vi
             }
         });
 
-        // View Reviews button click
+        // View Reviews button click → Open ReviewActivity
         holder.viewReviewsBtn.setOnClickListener(v -> {
             Intent intent = new Intent(context, ReviewActivity.class);
             intent.putExtra("playgroundName", pg.getName());
@@ -86,7 +96,7 @@ public class PlaygroundAdapter extends RecyclerView.Adapter<PlaygroundAdapter.Vi
             pgLocation = itemView.findViewById(R.id.pgLocation);
             bookBtn = itemView.findViewById(R.id.bookBtn);
             favoriteBtn = itemView.findViewById(R.id.favoriteBtn);
-            viewReviewsBtn = itemView.findViewById(R.id.viewReviewsBtn); // ✅ newly added
+            viewReviewsBtn = itemView.findViewById(R.id.viewReviewsBtn);
             playgroundImage = itemView.findViewById(R.id.playgroundImage);
         }
     }

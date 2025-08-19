@@ -3,48 +3,61 @@ package com.s23010804.findmyplayground;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 public class HomeScreen extends AppCompatActivity {
 
-    Button findPlaygroundBtn, myBookingsBtn, favoritesBtn, notificationsBtn, settingsBtn;
+    private Button btnFind, btnMap, btnBookings, btnFavorites, btnLogout, btnNotifications, btnSettings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home_screen);  // Linked to your home screen layout
+
+        // Remove toolbar/action bar
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
+
+        setContentView(R.layout.activity_home_screen);
 
         // Initialize buttons
-        findPlaygroundBtn = findViewById(R.id.findPlaygroundBtn);
-        myBookingsBtn = findViewById(R.id.myBookingsBtn);
-        favoritesBtn = findViewById(R.id.favoritesBtn);
-        notificationsBtn = findViewById(R.id.notificationsBtn);
-        settingsBtn = findViewById(R.id.settingsBtn);
+        btnFind = findViewById(R.id.btnFind);
+        btnMap = findViewById(R.id.btnMap);
+        btnBookings = findViewById(R.id.btnBookings);
+        btnFavorites = findViewById(R.id.btnFavorites);
+        btnLogout = findViewById(R.id.btnLogout);
+        btnNotifications = findViewById(R.id.btnNotifications);
+        btnSettings = findViewById(R.id.btnsettings);
 
-        // Set onClickListeners
-        findPlaygroundBtn.setOnClickListener(v -> {
-            Intent intent = new Intent(HomeScreen.this, FindPlaygroundActivity.class);
-            startActivity(intent);
+        // Set button actions
+        btnFind.setOnClickListener(v ->
+                startActivity(new Intent(HomeScreen.this, FindPlaygroundActivity.class))
+        );
+
+        btnMap.setOnClickListener(v ->
+                startActivity(new Intent(HomeScreen.this, MapActivity.class))
+        );
+
+        btnBookings.setOnClickListener(v ->
+                startActivity(new Intent(HomeScreen.this, MyBookingsActivity.class))
+        );
+
+        btnFavorites.setOnClickListener(v ->
+                startActivity(new Intent(HomeScreen.this, FavoritesActivity.class))
+        );
+
+        btnLogout.setOnClickListener(v -> {
+            startActivity(new Intent(HomeScreen.this, LoginScreen.class));
+            finish(); // End HomeScreen so user can't go back without logging in
         });
 
-        myBookingsBtn.setOnClickListener(v -> {
-            Intent intent = new Intent(HomeScreen.this, MyBookingsActivity.class);
-            startActivity(intent);
-        });
+        btnNotifications.setOnClickListener(v ->
+                startActivity(new Intent(HomeScreen.this, NotificationsActivity.class))
+        );
 
-        favoritesBtn.setOnClickListener(v -> {
-            Intent intent = new Intent(HomeScreen.this, FavoritesActivity.class);
-            startActivity(intent);
-        });
-
-        notificationsBtn.setOnClickListener(v -> {
-            Intent intent = new Intent(HomeScreen.this, NotificationsActivity.class);
-            startActivity(intent);
-        });
-
-        settingsBtn.setOnClickListener(v -> {
-            Intent intent = new Intent(HomeScreen.this, SettingsActivity.class);
-            startActivity(intent);
-        });
+        btnSettings.setOnClickListener(v ->
+                startActivity(new Intent(HomeScreen.this, SettingsActivity.class))
+        );
     }
 }

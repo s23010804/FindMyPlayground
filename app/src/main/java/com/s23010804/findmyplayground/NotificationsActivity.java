@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.s23010804.findmyplayground.model.Notification;
+import com.s23010804.findmyplayground.NotificationAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,21 +50,17 @@ public class NotificationsActivity extends AppCompatActivity {
             public boolean onMove(@NonNull RecyclerView recyclerView,
                                   @NonNull RecyclerView.ViewHolder viewHolder,
                                   @NonNull RecyclerView.ViewHolder target) {
-                return false; // We don't want drag & drop
+                return false;
             }
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 int position = viewHolder.getAdapterPosition();
-                Notification removed = notificationList.get(position);
                 notificationList.remove(position);
                 adapter.notifyItemRemoved(position);
-
                 Toast.makeText(NotificationsActivity.this, "Notification removed", Toast.LENGTH_SHORT).show();
             }
         };
-
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
-        itemTouchHelper.attachToRecyclerView(notificationsRecyclerView);
+        new ItemTouchHelper(simpleCallback).attachToRecyclerView(notificationsRecyclerView);
     }
 }

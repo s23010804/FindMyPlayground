@@ -8,15 +8,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.s23010804.findmyplayground.model.Playground;
+import com.s23010804.findmyplayground.adapter.PlaygroundAdapter;
+import com.s23010804.findmyplayground.models.Playground;
 
 import java.util.ArrayList;
 
 public class FavoritesActivity extends AppCompatActivity {
 
-    RecyclerView favoritesRecyclerView;
-    ArrayList<Playground> favoriteList;
-    DatabaseHelper db;
+    private RecyclerView favoritesRecyclerView;
+    private ArrayList<Playground> favoriteList;
+    private DatabaseHelper db;
+    private PlaygroundAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +36,8 @@ public class FavoritesActivity extends AppCompatActivity {
 
     private void loadFavorites() {
         Cursor cursor = db.getAllFavorites();
-        if (cursor.getCount() == 0) {
+
+        if (cursor == null || cursor.getCount() == 0) {
             Toast.makeText(this, "No favorites found", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -43,13 +46,15 @@ public class FavoritesActivity extends AppCompatActivity {
             String name = cursor.getString(cursor.getColumnIndexOrThrow("pg_name"));
             String location = cursor.getString(cursor.getColumnIndexOrThrow("location"));
 
-            // If imageName is not stored in DB, use a default image name
-            String imageName = "sample_playground"; // default or hardcoded value
-
-            favoriteList.add(new Playground(name, location, imageName));
+            // Use a drawable resource id for image
+            int imageResId = R.drawable.sample_playground;
+            favoriteList.add(new Playground(name, location, imageResId));
         }
+        cursor.close();
 
-        PlaygroundAdapter adapter = new PlaygroundAdapter(this, favoriteList);
+        // Set adapter with context
+        adapter = new PlaygroundAdapter(FavoritesActivity.this, favoriteList);
         favoritesRecyclerView.setAdapter(adapter);
+
     }
 }

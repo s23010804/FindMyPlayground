@@ -9,52 +9,52 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "UserData.db";
+    public static final int DATABASE_VERSION = 2; // ✅ bumped version to recreate tables if schema changes
+
+    // Users table
     public static final String TABLE_NAME = "users";
     public static final String COL_1 = "ID";
     public static final String COL_2 = "ownerName";
     public static final String COL_5 = "contactNumber";
     public static final String COL_6 = "password";
 
+    // Other tables
     public static final String BOOKING_TABLE = "bookings";
     public static final String FAVORITES_TABLE = "favorites";
-    public static final String REVIEWS_TABLE = "reviews";  // Added review table name
+    public static final String REVIEWS_TABLE = "reviews";
 
     public DatabaseHelper(Context context) {
-        super(context, DATABASE_NAME, null, 1);
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        // Users table
-        String createUsersTable = "CREATE TABLE " + TABLE_NAME + " (" +
+        // Users
+        db.execSQL("CREATE TABLE " + TABLE_NAME + " (" +
                 COL_1 + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 COL_2 + " TEXT, " +
                 COL_5 + " TEXT, " +
-                COL_6 + " TEXT)";
-        db.execSQL(createUsersTable);
+                COL_6 + " TEXT)");
 
-        // Bookings table
-        String createBookingsTable = "CREATE TABLE IF NOT EXISTS " + BOOKING_TABLE + " (" +
+        // Bookings
+        db.execSQL("CREATE TABLE IF NOT EXISTS " + BOOKING_TABLE + " (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "pg_name TEXT, " +
                 "date TEXT, " +
-                "time TEXT)";
-        db.execSQL(createBookingsTable);
+                "time TEXT)");
 
-        // Favorites table
-        String createFavoritesTable = "CREATE TABLE IF NOT EXISTS " + FAVORITES_TABLE + " (" +
+        // Favorites ✅ UNIQUE to prevent duplicates
+        db.execSQL("CREATE TABLE IF NOT EXISTS " + FAVORITES_TABLE + " (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "pg_name TEXT, " +
-                "location TEXT)";
-        db.execSQL(createFavoritesTable);
+                "pg_name TEXT UNIQUE, " +
+                "location TEXT)");
 
-        // ✅ Reviews table
-        String createReviewsTable = "CREATE TABLE IF NOT EXISTS " + REVIEWS_TABLE + " (" +
+        // Reviews
+        db.execSQL("CREATE TABLE IF NOT EXISTS " + REVIEWS_TABLE + " (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "pg_name TEXT, " +
                 "rating INTEGER, " +
-                "comment TEXT)";
-        db.execSQL(createReviewsTable);
+                "comment TEXT)");
     }
 
     @Override
@@ -62,11 +62,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + BOOKING_TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + FAVORITES_TABLE);
-        db.execSQL("DROP TABLE IF EXISTS " + REVIEWS_TABLE); // Drop reviews too
+        db.execSQL("DROP TABLE IF EXISTS " + REVIEWS_TABLE);
         onCreate(db);
     }
 
-    // User insert
+    // ------------------- USERS -------------------
     public boolean insertUser(String ownerName, String contactNumber, String password) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -77,18 +77,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result != -1;
     }
 
-    // User check
     public boolean checkUser(String ownerName, String password) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME +
-                        " WHERE " + COL_2 + " = ? AND " + COL_6 + " = ?",
+                        " WHERE " + COL_2 + "=? AND " + COL_6 + "=?",
                 new String[]{ownerName, password});
         boolean exists = cursor.getCount() > 0;
         cursor.close();
         return exists;
     }
 
-    // Insert booking
+    // ------------------- BOOKINGS -------------------
     public boolean insertBooking(String pgName, String date, String time) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -99,15 +98,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result != -1;
     }
 
-    // Get all bookings
     public Cursor getAllBookings() {
         SQLiteDatabase db = this.getReadableDatabase();
         return db.rawQuery("SELECT * FROM " + BOOKING_TABLE, null);
     }
 
-    // Insert favorite
+    // ------------------- FAVORITES -------------------
     public boolean addToFavorites(String pgName, String location) {
         SQLiteDatabase db = this.getWritableDatabase();
+
+        // ✅ Check if already exists
+        Cursor cursor = db.rawQuery("SELECT * FROM " + FAVORITES_TABLE + " WHERE pg_name = ?", new String[]{pgName});
+        if (cursor.moveToFirst()) {
+            cursor.close();
+            return false; // already exists
+        }
+        cursor.close();
+
         ContentValues values = new ContentValues();
         values.put("pg_name", pgName);
         values.put("location", location);
@@ -115,20 +122,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result != -1;
     }
 
-    // Get all favorites
     public Cursor getAllFavorites() {
         SQLiteDatabase db = this.getReadableDatabase();
         return db.rawQuery("SELECT * FROM " + FAVORITES_TABLE, null);
     }
 
-    // Remove favorite
     public boolean removeFavorite(String pgName) {
         SQLiteDatabase db = this.getWritableDatabase();
         int result = db.delete(FAVORITES_TABLE, "pg_name = ?", new String[]{pgName});
         return result > 0;
     }
 
-    // ✅ Insert review
+    // ------------------- REVIEWS -------------------
     public boolean insertReview(String pgName, int rating, String comment) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -139,7 +144,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result != -1;
     }
 
-    // ✅ Get reviews for a playground
     public Cursor getReviews(String pgName) {
         SQLiteDatabase db = this.getReadableDatabase();
         return db.rawQuery("SELECT * FROM " + REVIEWS_TABLE + " WHERE pg_name = ?", new String[]{pgName});
